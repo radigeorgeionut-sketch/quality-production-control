@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanner Control Calitate</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; }
+        #reader { width: 100%; max-width: 500px; margin: auto; }
+        #result { margin-top: 20px; padding: 15px; border: 1px solid #ddd; display: none; }
+        .success { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Scanner Producție</h1>
+    <p>Scanați codul de bare (Articol/Comandă.Piesă)</p>
+    
+    <div id="reader"></div>
+    
+    <div id="result">
+        <h3>Rezultat Scanare:</h3>
+        <p id="scanned-text"></p>
+        <div id="parsed-data" class="success"></div>
+    </div>
+
+    <script>
+        function onScanSuccess(decodedText, decodedResult) {
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('scanned-text').innerText = "Cod brut: " + decodedText;
+
+            // Logica de parsare pentru formatul tau: 6531140150/02.5123450017
+            const parts = decodedText.split(/[/.]/);
+            if(parts.length >= 3) {
+                document.getElementById('parsed-data').innerHTML = `
+                    Articol: ${parts[0]}<br>
+                    Comandă: ${parts[1]}<br>
+                    Piesă: ${parts[2]}
+                `;
+            } else {
+                document.getElementById('parsed-data').innerText = "Format invalid!";
+            }
+        }
+
+        let html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+</body>
+</html>
